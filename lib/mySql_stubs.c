@@ -5,24 +5,42 @@
 #include <caml/mlvalues.h>
 #include <caml/alloc.h>
 #include <caml/memory.h>
+#include <caml/fail.h>
 #include <caml/custom.h>
+#include <caml/callback.h>
 
 MYSQL db;
 
 CAMLprim value
 caml_create_connection(value v) {
+  CAMLparam1(v);
+
+  // Get the record fields for the database connection
+  CAMLlocal5(host_val, user_val, password_val, database_val, port_val);
+  host_val = Field(v, 0);
+  user_val = Field(v, 1);
+  password_val = Field(v, 2);
+  database_val = Field(v, 3);
+  port_val = Field(v, 4);
+
+  char* host = String_val(host_val);
+  char* user = String_val(user_val);
+  char* password = String_val(password_val);
+  char* database = String_val(database_val);
+  int port = Int_val(port_val);
+
   // Initialize the MYSQL client library
   if (mysql_library_init(0, NULL, NULL)) {
-    fprintf(stderr, "could not initialize MYSQL client library\n");
-    exit(1);
+    caml_raise_with_string(*caml_named_value("ConnectionError"),
+      "Could not initialize the MYSQL client library");
   }
 
   // Initialize the MYSQL structure
   mysql_init(&db);
 
   // Connect to the database
-  if(!mysql_real_connect(&db, "localhost", "root", "", "test", 3006, NULL, 0)) {
-    fprintf(stderr, "failed to connect to database.\nError: %s", mysql_error(&db));
+  if(!mysql_real_connect(&db, host, user, password, database, port, NULL, 0)) {
+    caml_raise_with_string(*caml_named_value("ConnectionError"), mysql_error(&db));
   }
 
   return (value) &db;
@@ -36,8 +54,7 @@ caml_query(value db_v, value stmt_v) {
   int result = mysql_query(db, stmt);
 
   if (result != 0) {
-    fprintf(stderr, "Query failed.\nError: %s\n", mysql_error(db));
-    // OCaml exception
+    caml_raise_with_string(*caml_named_value("QueryError"), mysql_error(db));
   }
 
   return Val_int(result);
