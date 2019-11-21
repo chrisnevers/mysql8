@@ -15,6 +15,6 @@ You can run the driver executable with:
 
 # Contributing
 
-Contributions to `Bitlib` are greatly appreciated! ❤️ 
+Contributions to `ocaml-mysql` are greatly appreciated! ❤️ 
 
 Please try to keep its implementation unassuming and configurable. 🙂
