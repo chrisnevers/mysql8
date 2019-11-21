@@ -11,8 +11,6 @@ MYSQL db;
 
 CAMLprim value
 caml_create_connection(value v) {
-  printf("connecting to db!\n");
-
   // Initialize the MYSQL client library
   if (mysql_library_init(0, NULL, NULL)) {
     fprintf(stderr, "could not initialize MYSQL client library\n");
@@ -54,20 +52,20 @@ caml_close_connection(value db_v) {
   return Val_unit;
 }
 
-// TODO: List returns in reverse. Investigate top down list building.
 CAMLprim value
 caml_get_all_results(value db_v) {
-  CAMLparam1(db_v);
+  CAMLparam0();
 
   MYSQL* db = (MYSQL*) db_v;
 
+  // Set up result set list, etc.
+  CAMLlocal3(result_set, cons, tail);
+  result_set = Val_emptylist;
+  tail = result_set;
+
+  // Get the result of the query
   MYSQL_RES* res = mysql_store_result(db);
-
   uint64_t res_size = mysql_num_rows(res);
-
-  CAMLlocal2(cli_outer, cons_outer);
-
-  cli_outer = Val_emptylist;
 
   MYSQL_ROW row;
   unsigned int num_fields;
@@ -75,29 +73,38 @@ caml_get_all_results(value db_v) {
 
   num_fields = mysql_num_fields(res);
 
+  // Add all the rows to the result set
   while ((row = mysql_fetch_row(res))) {
     unsigned long *lengths;
     lengths = mysql_fetch_lengths(res);
 
-    CAMLlocal2(cli_inner, cons_inner);
+    CAMLlocal1(row_list);
 
-    cli_inner = Val_emptylist;
+    row_list = Val_emptylist;
     for (i = num_fields; i > 0; --i) {
 
-      cons_inner = caml_alloc(2, 0);
-      Store_field(cons_inner, 0, caml_copy_string(row[i - 1] ? row[i - 1] : "NULL"));
-      Store_field(cons_inner, 1, cli_inner);
-      cli_inner = cons_inner;
+      // Create the element in the row list
+      cons = caml_alloc(2, 0);
+      Store_field(cons, 0, caml_copy_string(row[i - 1] ? row[i - 1] : "NULL"));
+      Store_field(cons, 1, row_list);
+      row_list = cons;
 
     }
 
-    cons_outer = caml_alloc(2, 0);
-    Store_field(cons_outer, 0, cli_inner);
-    Store_field(cons_outer, 1, cli_outer);
+    // Create the element for the result set
+    cons = caml_alloc(2, 0);
+    Store_field(cons, 0, row_list);
+    Store_field(cons, 1, Val_emptylist);
 
-    cli_outer = cons_outer;
+    // Add row element to result set and update tail
+    if (result_set != Val_emptylist) {
+      caml_modify(&Field(tail, 1), cons);
+    } else {
+      result_set = cons;
+    }
+    tail = cons;
 
   }
 
-  CAMLreturn (cli_outer);
+  CAMLreturn (result_set);
 }
