@@ -4,7 +4,7 @@ type connection
 
 type query = string
 
-type cell
+type cell = string
 
 type row = cell array
 
@@ -19,6 +19,7 @@ external c_get_all_results : connection -> result = "caml_get_all_results"
 (* Conversion functions *)
 external c_cell2string  : cell -> string  = "caml_cell2string"
 external c_cell2int     : cell -> int     = "caml_cell2int"
+external c_cell2bool    : cell -> bool    = "caml_cell2bool"
 
 (* ML functions *)
 
@@ -33,3 +34,5 @@ let query db stmt =
 let cell2string col = c_cell2string col
 
 let cell2int col = c_cell2int col
+
+let cell2bool col = c_cell2bool col

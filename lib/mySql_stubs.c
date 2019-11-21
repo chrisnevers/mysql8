@@ -118,3 +118,11 @@ caml_cell2int(value cell) {
   int i = atoi(c);
   CAMLreturn(Val_int(i));
 }
+
+CAMLprim value
+caml_cell2bool(value cell) {
+  CAMLparam1(cell);
+  char* c = String_val(cell);
+  int i = atoi(c);
+  CAMLreturn(Val_bool(i));
+}
