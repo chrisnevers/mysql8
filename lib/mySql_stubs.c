@@ -80,15 +80,10 @@ caml_get_all_results(value db_v) {
 
     CAMLlocal1(row_list);
 
-    row_list = Val_emptylist;
-    for (i = num_fields; i > 0; --i) {
+    row_list = caml_alloc(num_fields, 0);
 
-      // Create the element in the row list
-      cons = caml_alloc(2, 0);
-      Store_field(cons, 0, caml_copy_string(row[i - 1] ? row[i - 1] : "NULL"));
-      Store_field(cons, 1, row_list);
-      row_list = cons;
-
+    for (i = 0; i < num_fields; ++i) {
+      Store_field(row_list, i, caml_copy_string(row[i] ? row[i] : "NULL"));
     }
 
     // Create the element for the result set
@@ -107,4 +102,19 @@ caml_get_all_results(value db_v) {
   }
 
   CAMLreturn (result_set);
+}
+
+CAMLprim value
+caml_cell2string(value cell) {
+  CAMLparam1(cell);
+  char* c = String_val(cell);
+  CAMLreturn(caml_copy_string(c));
+}
+
+CAMLprim value
+caml_cell2int(value cell) {
+  CAMLparam1(cell);
+  char* c = String_val(cell);
+  int i = atoi(c);
+  CAMLreturn(Val_int(i));
 }
