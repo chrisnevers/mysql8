@@ -13,3 +13,8 @@ You can run the driver executable with:
 
     dune exec main
 
+# Contributing
+
+Contributions to `ocaml-mysql` are greatly appreciated! ❤️ 
+
+Please try to keep its implementation unassuming and configurable. 🙂
