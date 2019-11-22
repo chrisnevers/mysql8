@@ -13,8 +13,13 @@ You can run the driver executable with:
 
     dune exec main
 
+## To do
+The query functionality should return rows affected/returned.
+A separate function should be used to retrieve the rows.
+Create `some_*_of_cell` functions for nullable columns.
+
 # Contributing
 
-Contributions to `ocaml-mysql` are greatly appreciated! ❤️ 
+Contributions to `ocaml-mysql` are greatly appreciated! ❤️
 
 Please try to keep its implementation unassuming and configurable. 🙂

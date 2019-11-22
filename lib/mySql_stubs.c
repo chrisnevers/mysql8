@@ -82,6 +82,18 @@ caml_get_all_results(value db_v) {
 
   // Get the result of the query
   MYSQL_RES* res = mysql_store_result(db);
+
+  if (res == NULL) {
+    if (mysql_field_count(db) == 0) {
+      // Non-SELECT statement. This case is expected.
+      // Probably want to return the number of rows affected.
+      CAMLreturn(Val_emptylist);
+    } else {
+      caml_raise_with_string(*caml_named_value("QueryError"), mysql_error(db));
+    }
+  }
+
+
   uint64_t res_size = mysql_num_rows(res);
 
   MYSQL_ROW row;
@@ -117,6 +129,8 @@ caml_get_all_results(value db_v) {
     tail = cons;
 
   }
+
+  mysql_free_result(res);
 
   CAMLreturn (result_set);
 }

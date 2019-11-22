@@ -9,9 +9,12 @@ let config = {
   port=3006;
 }
 
+let select_stmt = "SELECT * FROM example;"
+let insert_stmt = "INSERT INTO example VALUES ('26c66405-433b-492d-874a-a9eddaa6126f', 'Jamila', 25, NULL);"
+
 let () = try
   let db  = connect config in
-  query db "SELECT * FROM example;" |> List.map convert |> pp_rows;
+  query db select_stmt |> List.map convert |> pp_rows;
   disconnect db
   with
   | ConnectionError msg -> print_endline msg
