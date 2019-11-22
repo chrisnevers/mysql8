@@ -13,10 +13,12 @@ You can run the driver executable with:
 
     dune exec main
 
-## To do
-The query functionality should return rows affected/returned.
-A separate function should be used to retrieve the rows.
-Create `some_*_of_cell` functions for nullable columns.
+## To Do
+* The query functionality should return rows affected/returned.
+
+* A separate function should be used to retrieve the rows.
+
+* Create `some_*_of_cell` functions for nullable columns.
 
 # Contributing
 
