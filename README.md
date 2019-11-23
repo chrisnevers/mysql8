@@ -24,6 +24,7 @@ You can run the driver executable with:
 
 # Documentation
 The [Pancakes API](https://chrisnevers.github.io/pancakes/pancakes/index.html)
+
 The [MySQL C Connector API](https://dev.mysql.com/doc/refman/8.0/en/c-api.html)
 
 # Contributing
