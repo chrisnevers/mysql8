@@ -29,6 +29,6 @@ The [MySQL C Connector API](https://dev.mysql.com/doc/refman/8.0/en/c-api.html)
 
 # Contributing
 
-Contributions to `ocaml-mysql` are greatly appreciated! ❤️
+Contributions to `pancakes` are greatly appreciated! ❤️
 
 Please try to keep its implementation unassuming and configurable. 🙂
