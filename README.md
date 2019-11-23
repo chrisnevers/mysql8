@@ -1,4 +1,4 @@
-# 🥞 MySQL
+# 🥞 Pancakes
 
 An OCaml wrapper for the MySQL C API (v8.0)
 

@@ -2,9 +2,9 @@ opam-version: "2.0"
 version: "1.0"
 authors: "Chris Nevers <christophernevers96@gmail.com>"
 maintainer: "Chris Nevers <christophernevers96@gmail.com>"
-homepage: "https://github.com/chrisnevers/mySql"
-bug-reports: "https://github.com/chrisnevers/mySql/issues"
-dev-repo: "git://github.com/chrisnevers/mySql.git"
+homepage: "https://github.com/chrisnevers/pancakes"
+bug-reports: "https://github.com/chrisnevers/pancakes/issues"
+dev-repo: "git://github.com/chrisnevers/pancakes.git"
 synopsis: "OCaml interface for mysql-connector-c"
 build: [
 ["dune" "subst"] {pinned}

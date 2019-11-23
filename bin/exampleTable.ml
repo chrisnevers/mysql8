@@ -1,3 +1,5 @@
+open Pancakes
+
 type t = {
   id    : string;
   name  : string;
