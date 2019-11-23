@@ -14,7 +14,9 @@ let insert_stmt = "INSERT INTO example VALUES ('26c66405-433b-492d-874a-a9eddaa6
 
 let () = try
   let db = connect config in
-  execute db select_stmt |> List.map convert |> pp_rows;
+  let (num_of_rows, rows) = execute db select_stmt in
+  print_endline @@ "Query returned " ^ string_of_int num_of_rows ^ " rows.";
+  rows |> List.map convert |> pp_rows;
   disconnect db
   with
   | ConnectionError msg -> print_endline msg

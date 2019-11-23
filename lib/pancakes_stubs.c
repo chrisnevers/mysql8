@@ -10,6 +10,7 @@
 #include <caml/callback.h>
 
 MYSQL db;
+MYSQL_RES* res;
 
 CAMLprim value
 caml_create_connection(value v) {
@@ -48,6 +49,7 @@ caml_create_connection(value v) {
 
 CAMLprim value
 caml_query(value db_v, value stmt_v) {
+  CAMLparam0();
   MYSQL* db = (MYSQL*) db_v;
   char* stmt = String_val(stmt_v);
 
@@ -57,7 +59,27 @@ caml_query(value db_v, value stmt_v) {
     caml_raise_with_string(*caml_named_value("QueryError"), mysql_error(db));
   }
 
-  return Val_int(result);
+  // Get the result of the query
+  res = mysql_store_result(db);
+
+  if (res == NULL) {
+    if (mysql_field_count(db) == 0) {
+      // Non-SELECT statement. This case is expected.
+      // Probably want to return the number of rows affected.
+      return Val_unit;
+    } else {
+      caml_raise_with_string(*caml_named_value("QueryError"), mysql_error(db));
+    }
+  }
+
+  return Val_unit;
+}
+
+CAMLprim value
+caml_affected_rows(value db_v) {
+  MYSQL* db = (MYSQL*) db_v;
+  uint64_t affected_rows = mysql_affected_rows(db);
+  return Val_int(affected_rows);
 }
 
 CAMLprim value
@@ -70,7 +92,7 @@ caml_close_connection(value db_v) {
 }
 
 CAMLprim value
-caml_get_all_results(value db_v) {
+caml_results(value db_v) {
   CAMLparam0();
 
   MYSQL* db = (MYSQL*) db_v;
@@ -79,20 +101,6 @@ caml_get_all_results(value db_v) {
   CAMLlocal3(result_set, cons, tail);
   result_set = Val_emptylist;
   tail = result_set;
-
-  // Get the result of the query
-  MYSQL_RES* res = mysql_store_result(db);
-
-  if (res == NULL) {
-    if (mysql_field_count(db) == 0) {
-      // Non-SELECT statement. This case is expected.
-      // Probably want to return the number of rows affected.
-      CAMLreturn(Val_emptylist);
-    } else {
-      caml_raise_with_string(*caml_named_value("QueryError"), mysql_error(db));
-    }
-  }
-
 
   uint64_t res_size = mysql_num_rows(res);
 
@@ -146,7 +154,7 @@ CAMLprim value
 caml_cell2int(value cell) {
   CAMLparam1(cell);
   char* c = String_val(cell);
-  int i = atoi(c);
+  uint64_t i = atoi(c);
   CAMLreturn(Val_int(i));
 }
 

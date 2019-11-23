@@ -24,23 +24,35 @@ type database = {
   port: int;
 }
 
-(** Thrown if there was an error connecting to MySQL server or the database *)
+(** Thrown if there was an error connecting to MySQL server or the database. *)
 exception ConnectionError of string
 
-(** Thrown if there was an error executing the query *)
+(** Thrown if there was an error executing the query. *)
 exception QueryError of string
 
-(** Creates a connection to the database with the given configuration *)
+(** Creates a connection to the database with the given configuration. *)
 val connect : database -> connection
 
 (** Disconnects and destroys the connection to the database. The
     handler should not be used after calling disconnect.  *)
 val disconnect : connection -> unit
 
-(** Executes the given statement, returning the resulting rows.
-    The resulting cells are all strings by default, but can be
-    converted to different datatypes by using the appropriate functions. *)
-val execute : connection -> statement -> result
+(** Executes the given SQL statement. *)
+val query : connection -> statement -> unit
+
+(** Executes the given statement, returning the number of affected/returned
+    rows and the return set. *)
+val execute : connection -> statement -> (int * result)
+
+(** Like [execute], but ignores the number of affected rows and only
+    returns the return set. *)
+val execute_ : connection -> statement -> result
+
+(** Returns the number of rows returned/affected by the last query. *)
+val affected_rows : connection -> int
+
+(** Gets the return set of the last query  *)
+val results : connection -> result
 
 val str_of_cell  : cell -> string
 val int_of_cell  : cell -> int

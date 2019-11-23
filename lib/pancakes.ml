@@ -22,23 +22,27 @@ exception QueryError of string
 let _ = Callback.register_exception "QueryError" (QueryError "")
 
 (* External C functions *)
-external c_connect : database -> connection = "caml_create_connection"
-external c_close : connection -> unit   = "caml_close_connection"
-external c_query : connection -> statement -> int = "caml_query"
-external c_get_all_results : connection -> result = "caml_get_all_results"
+external connect : database -> connection = "caml_create_connection"
+external disconnect : connection -> unit   = "caml_close_connection"
+external query : connection -> statement -> unit = "caml_query"
+external results : connection -> result = "caml_results"
+external affected_rows : connection -> int = "caml_affected_rows"
+
 (* Conversion functions *)
 external c_str_of_cell  : cell -> string  = "caml_cell2string"
 external c_int_of_cell  : cell -> int     = "caml_cell2int"
 external c_bool_of_cell : cell -> bool    = "caml_cell2bool"
 
 (* ML functions *)
-let connect db = c_connect db
-
-let disconnect db = c_close db
-
 let execute db stmt =
-  let _ = c_query db stmt in
-  c_get_all_results db
+  query db stmt;
+  let affected = affected_rows db in
+  let rows = results db in
+  (affected, rows)
+
+let execute_ db stmt =
+  query db stmt;
+  results db
 
 let str_of_cell   = c_str_of_cell
 let int_of_cell   = c_int_of_cell
