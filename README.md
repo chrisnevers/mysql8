@@ -14,11 +14,9 @@ You can run the driver executable with:
     dune exec main
 
 ## To Do
-* The query functionality should return rows affected/returned.
+* Add a function to load the rows one at a time.
 
-* A separate function should be used to retrieve the rows.
-
-* Handle more data types
+* Handle more data types.
 
 * Create `some_*_of_cell` functions for nullable columns.
 
