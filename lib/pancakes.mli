@@ -2,6 +2,7 @@ module MySql : sig
 
 (** The MySQL connection handler *)
 type connection
+type mysql_res
 
 (** A SQL statement  *)
 type statement = string
@@ -38,7 +39,7 @@ val connect : database -> connection
 val disconnect : connection -> unit
 
 (** Executes the given SQL statement. *)
-val query : connection -> statement -> unit
+val query : connection -> statement -> mysql_res
 
 (** Executes the given statement, returning the number of affected/returned
     rows and the return set. *)

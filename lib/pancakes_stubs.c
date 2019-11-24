@@ -10,7 +10,9 @@
 #include <caml/callback.h>
 
 MYSQL db;
-MYSQL_RES* res;
+MYSQL_RES* res = NULL;
+
+bool debug = false;
 
 CAMLprim value
 caml_create_connection(value v) {
@@ -30,6 +32,8 @@ caml_create_connection(value v) {
   char* database = String_val(database_val);
   int port = Int_val(port_val);
 
+  if(debug) printf("Initializing MySQL Library\n");
+
   // Initialize the MYSQL client library
   if (mysql_library_init(0, NULL, NULL)) {
     caml_raise_with_string(*caml_named_value("ConnectionError"),
@@ -37,9 +41,11 @@ caml_create_connection(value v) {
   }
 
   // Initialize the MYSQL structure
+  if(debug)  printf("Initializing MySQL\n");
   mysql_init(&db);
 
   // Connect to the database
+  if(debug)  printf("Connecting MySQL\n");
   if(!mysql_real_connect(&db, host, user, password, database, port, NULL, 0)) {
     caml_raise_with_string(*caml_named_value("ConnectionError"), mysql_error(&db));
   }
@@ -59,26 +65,36 @@ caml_query(value db_v, value stmt_v) {
     caml_raise_with_string(*caml_named_value("QueryError"), mysql_error(db));
   }
 
+  if(debug) printf("Executed query!\n");
+
   // Get the result of the query
   res = mysql_store_result(db);
+  if(debug) printf("Got result! %d\n", res == NULL);
 
   if (res == NULL) {
+    if(debug) printf("Result is NULL!\n");
+
     if (mysql_field_count(db) == 0) {
+      if(debug) printf("Non select statement!\n");
+
       // Non-SELECT statement. This case is expected.
       // Probably want to return the number of rows affected.
       return Val_unit;
     } else {
+      if(debug) printf("Error from query!\n");
       caml_raise_with_string(*caml_named_value("QueryError"), mysql_error(db));
     }
   }
 
-  return Val_unit;
+  return (value) res;
 }
 
 CAMLprim value
 caml_affected_rows(value db_v) {
   MYSQL* db = (MYSQL*) db_v;
+  if(debug) printf("Finding affected rows!\n");
   uint64_t affected_rows = mysql_affected_rows(db);
+  if(debug) printf("Got affected rows!\n");
   return Val_int(affected_rows);
 }
 
@@ -102,16 +118,29 @@ caml_results(value db_v) {
   result_set = Val_emptylist;
   tail = result_set;
 
-  uint64_t res_size = mysql_num_rows(res);
+  if (mysql_field_count(db) == 0) {
+    // Non-SELECT statement. This case is expected.
+    CAMLreturn(result_set);
+  }
+
+  if(debug) printf("Getting num of rows! %d\n", res == NULL);
+
+  uint64_t res_size = mysql_affected_rows(db);
+  if(debug) printf("Got num of rows! %llu , res is null: %d\n", res_size, res == NULL);
+  if (res_size == 0) {
+    CAMLreturn(result_set);
+  }
 
   MYSQL_ROW row;
   unsigned int num_fields;
   unsigned int i;
 
+  if(debug) printf("Getting num of fields!\n");
   num_fields = mysql_num_fields(res);
-
+  if(debug) printf("Got num of fields!\n");
   // Add all the rows to the result set
   while ((row = mysql_fetch_row(res))) {
+    if(debug) printf("Got next row!\n");
     unsigned long *lengths;
     lengths = mysql_fetch_lengths(res);
 
@@ -137,6 +166,8 @@ caml_results(value db_v) {
     tail = cons;
 
   }
+
+  if(debug) printf("Done getting results!\n");
 
   mysql_free_result(res);
 
