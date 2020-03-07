@@ -1,5 +1,12 @@
-open Pancakes.MySql
-open ExampleTable
+open Pancakes
+open MySql
+
+type t = {
+  id : string;
+  name : string;
+  age : int;
+  alive : bool option;
+}
 
 let config = {
   host="localhost";
@@ -9,16 +16,29 @@ let config = {
   port=3006;
 }
 
-let select_stmt = "SELECT * FROM example;"
-let insert_stmt = "INSERT INTO example VALUES ('26c66405-433b-492d-874a-a9eddaa6126f', 'Jamila', 25, NULL);"
-let delete_stmt = "DELETE FROM example WHERE name = 'Jamila'"
+let string_of_bool_option = function
+  | None    -> "None"
+  | Some b  -> "Some " ^ string_of_bool b
 
-let () = try
+let pp row =
+  print_endline @@ String.concat ", " [
+    row.id; row.name; string_of_int row.age; string_of_bool_option row.alive
+  ]
+
+let pp_rows = List.iter pp
+
+let convert row = {
+  id    = row.(0);
+  name  = row.(1);
+  age   = MySql.int_of_cell row.(2);
+  alive = MySql.some_bool_of_cell row.(3);
+}
+
+let convert_rows = List.map convert
+
+let _ =
   let db = connect config in
-  let (num_of_rows, rows) = execute db select_stmt in
-  print_endline @@ "Query returned " ^ string_of_int num_of_rows ^ " rows.";
-  rows |> List.map convert |> pp_rows;
-  disconnect db
-  with
-  | ConnectionError msg -> print_endline msg
-  | QueryError msg -> print_endline msg
+  let cnt, rows = execute db "SELECT * FROM example;" in
+  print_endline @@ string_of_int cnt;
+  rows |> convert_rows |> pp_rows;
+  ()

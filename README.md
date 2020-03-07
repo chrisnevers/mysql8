@@ -18,8 +18,6 @@ You can run the driver executable with:
 
 * Handle more data types.
 
-* Create `some_*_of_cell` functions for nullable columns.
-
 # Documentation
 The [Pancakes API](https://chrisnevers.github.io/pancakes/pancakes/index.html)
 

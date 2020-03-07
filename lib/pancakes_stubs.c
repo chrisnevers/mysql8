@@ -8,6 +8,7 @@
 #include <caml/fail.h>
 #include <caml/custom.h>
 #include <caml/callback.h>
+#include <string.h>
 
 MYSQL db;
 MYSQL_RES* res = NULL;
@@ -101,6 +102,7 @@ caml_affected_rows(value db_v) {
 CAMLprim value
 caml_close_connection(value db_v) {
   MYSQL* db = (MYSQL*) db_v;
+  if (debug) printf("Disconnecting db.\n");
 
   mysql_close(db);
   mysql_library_end();
@@ -149,8 +151,10 @@ caml_results(value db_v) {
     row_list = caml_alloc(num_fields, 0);
 
     for (i = 0; i < num_fields; ++i) {
+      if(debug) printf("%s ", row[i] ? row[i] : "NULL");
       Store_field(row_list, i, caml_copy_string(row[i] ? row[i] : "NULL"));
     }
+    if(debug) printf("\n");
 
     // Create the element for the result set
     cons = caml_alloc(2, 0);
@@ -185,7 +189,7 @@ CAMLprim value
 caml_cell2int(value cell) {
   CAMLparam1(cell);
   char* c = String_val(cell);
-  uint64_t i = atoi(c);
+  int64_t i = atoi(c);
   CAMLreturn(Val_int(i));
 }
 
@@ -195,4 +199,61 @@ caml_cell2bool(value cell) {
   char* c = String_val(cell);
   int i = atoi(c);
   CAMLreturn(Val_bool(i));
+}
+
+CAMLprim value
+caml_cell2somebool(value cell) {
+  CAMLparam1(cell);
+  char* c = String_val(cell);
+  CAMLlocal1(option);
+  if (strcmp(c, "NULL") == 0) {
+    option = caml_alloc(1, 0);
+    // Tag as None
+    Store_field(option, 0, 0);
+  } else {
+    int i = atoi(c);
+    option = caml_alloc(2, 0);
+    // Tag as Some
+    Store_field(option, 0, 1);
+    Store_field(option, 1, Val_bool(i));
+  }
+  CAMLreturn(option);
+}
+
+CAMLprim value
+caml_cell2someint(value cell) {
+  CAMLparam1(cell);
+  char* c = String_val(cell);
+  CAMLlocal1(option);
+  if (strcmp(c, "NULL") == 0) {
+    option = caml_alloc(1, 0);
+    // Tag as None
+    Store_field(option, 0, 0);
+  } else {
+    int64_t i = atoi(c);
+    option = caml_alloc(2, 0);
+    // Tag as Some
+    Store_field(option, 0, 1);
+    Store_field(option, 1, Val_int(i));
+  }
+  CAMLreturn(option);
+}
+
+
+CAMLprim value
+caml_cell2somestr(value cell) {
+  CAMLparam1(cell);
+  char* c = String_val(cell);
+  CAMLlocal1(option);
+  if (strcmp(c, "NULL") == 0) {
+    option = caml_alloc(1, 0);
+    // Tag as None
+    Store_field(option, 0, 0);
+  } else {
+    option = caml_alloc(2, 0);
+    // Tag as Some
+    Store_field(option, 0, 1);
+    Store_field(option, 1, caml_copy_string(c));
+  }
+  CAMLreturn(option);
 }
