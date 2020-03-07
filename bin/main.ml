@@ -6,6 +6,7 @@ type t = {
   name : string;
   age : int;
   alive : bool option;
+  first_initial: char;
 }
 
 let config = {
@@ -22,7 +23,8 @@ let string_of_bool_option = function
 
 let pp row =
   print_endline @@ String.concat ", " [
-    row.id; row.name; string_of_int row.age; string_of_bool_option row.alive
+    row.id; row.name; string_of_int row.age; string_of_bool_option row.alive;
+    Char.escaped row.first_initial
   ]
 
 let pp_rows = List.iter pp
@@ -30,8 +32,9 @@ let pp_rows = List.iter pp
 let convert row = {
   id    = row.(0);
   name  = row.(1);
-  age   = MySql.int_of_cell row.(2);
-  alive = MySql.some_bool_of_cell row.(3);
+  age   = int_of_cell row.(2);
+  alive = some_bool_of_cell row.(3);
+  first_initial = char_of_cell row.(4);
 }
 
 let convert_rows = List.map convert

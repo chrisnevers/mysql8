@@ -33,9 +33,11 @@ external affected_rows : connection -> int = "caml_affected_rows"
 external c_str_of_cell  : cell -> string  = "caml_cell2string"
 external c_int_of_cell  : cell -> int     = "caml_cell2int"
 external c_bool_of_cell : cell -> bool    = "caml_cell2bool"
+external c_char_of_cell : cell -> char    = "caml_cell2char"
 external c_some_bool_of_cell  : cell -> bool option   = "caml_cell2somebool"
 external c_some_int_of_cell   : cell -> int option    = "caml_cell2someint"
 external c_some_str_of_cell   : cell -> string option = "caml_cell2somestr"
+external c_some_char_of_cell  : cell -> char option   = "caml_cell2somechar"
 
 (* ML functions *)
 let execute db stmt =
@@ -51,8 +53,10 @@ let execute_ db stmt =
 let str_of_cell   = c_str_of_cell
 let int_of_cell   = c_int_of_cell
 let bool_of_cell  = c_bool_of_cell
+let char_of_cell  = c_char_of_cell
 let some_bool_of_cell = c_some_bool_of_cell
 let some_int_of_cell  = c_some_int_of_cell
 let some_str_of_cell  = c_some_str_of_cell
+let some_char_of_cell = c_some_char_of_cell
 
 end

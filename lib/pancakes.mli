@@ -58,8 +58,11 @@ val results : connection -> result
 val str_of_cell  : cell -> string
 val int_of_cell  : cell -> int
 val bool_of_cell : cell -> bool
-val some_bool_of_cell : cell -> bool option
+val char_of_cell : cell -> char
+
 val some_int_of_cell : cell -> int option
 val some_str_of_cell : cell -> string option
+val some_bool_of_cell : cell -> bool option
+val some_char_of_cell : cell -> char option
 
 end

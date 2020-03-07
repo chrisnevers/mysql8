@@ -202,6 +202,14 @@ caml_cell2bool(value cell) {
 }
 
 CAMLprim value
+caml_cell2char(value cell) {
+  CAMLparam1(cell);
+  char* c = String_val(cell);
+  int i = (int) c[0];
+  CAMLreturn(Val_int(i));
+}
+
+CAMLprim value
 caml_cell2somebool(value cell) {
   CAMLparam1(cell);
   char* c = String_val(cell);
@@ -254,6 +262,25 @@ caml_cell2somestr(value cell) {
     // Tag as Some
     Store_field(option, 0, 1);
     Store_field(option, 1, caml_copy_string(c));
+  }
+  CAMLreturn(option);
+}
+
+CAMLprim value
+caml_cell2somechar(value cell) {
+  CAMLparam1(cell);
+  char* c = String_val(cell);
+  CAMLlocal1(option);
+  if (strcmp(c, "NULL") == 0) {
+    option = caml_alloc(1, 0);
+    // Tag as None
+    Store_field(option, 0, 0);
+  } else {
+    int i = (int) c[0];
+    option = caml_alloc(2, 0);
+    // Tag as Some
+    Store_field(option, 0, 1);
+    Store_field(option, 1, Val_int(i));
   }
   CAMLreturn(option);
 }
