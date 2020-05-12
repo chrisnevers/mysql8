@@ -13,4 +13,6 @@ build: [
 
 depends: [
 "dune" {build}
+"dune-configurator" {build}
+"ppx_inline_test" {with-test}
 ]
