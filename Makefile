@@ -18,8 +18,8 @@ clean:
 
 # Create a release on Github, then run git pull
 publish:
-	@git tag 1.0
-	@git push origin 1.0
+	@git tag 0.1
+	@git push origin 0.1
 	@git pull
 	@opam pin .
-	@opam publish https://github.com/chrisnevers/mysql8/archive/1.0.tar.gz
+	@opam publish https://github.com/chrisnevers/mysql8/archive/0.1.tar.gz
