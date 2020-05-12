@@ -105,7 +105,10 @@ caml_close_connection(value db_v) {
   if (debug) printf("Disconnecting db.\n");
 
   mysql_close(db);
+  if (debug) printf("Library ending db.\n");
   mysql_library_end();
+  if (debug) printf("Done db.\n");
+
   return Val_unit;
 }
 
@@ -116,7 +119,11 @@ caml_results(value db_v) {
   MYSQL* db = (MYSQL*) db_v;
 
   // Set up result set list, etc.
-  CAMLlocal3(result_set, cons, tail);
+  CAMLlocal1(result_set);
+  CAMLlocal1(cons);
+  CAMLlocal1(tail);
+  CAMLlocal1(row_list);
+
   result_set = Val_emptylist;
   tail = result_set;
 
@@ -141,12 +148,10 @@ caml_results(value db_v) {
   num_fields = mysql_num_fields(res);
   if(debug) printf("Got num of fields!\n");
   // Add all the rows to the result set
+  int count = 0;
   while ((row = mysql_fetch_row(res))) {
-    if(debug) printf("Got next row!\n");
-    unsigned long *lengths;
-    lengths = mysql_fetch_lengths(res);
-
-    CAMLlocal1(row_list);
+    if(debug) printf("Got next row! %d\n", count);
+    count++;
 
     row_list = caml_alloc(num_fields, 0);
 

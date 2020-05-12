@@ -3,11 +3,14 @@ open MySql
 
 type t = {
   id : string;
-  name : string;
-  age : int;
-  alive : bool option;
-  first_initial: char;
+  col1: string;
+  col2: string;
+  col3: string;
+  col4: string;
+  col5: string;
+  col6: string;
 }
+
 
 let config = {
   host="localhost";
@@ -17,31 +20,45 @@ let config = {
   port=3006;
 }
 
-let string_of_bool_option = function
-  | None    -> "None"
-  | Some b  -> "Some " ^ string_of_bool b
 
-let pp row =
-  print_endline @@ String.concat ", " [
-    row.id; row.name; string_of_int row.age; string_of_bool_option row.alive;
-    Char.escaped row.first_initial
+let pp i (row : t) =
+  print_endline @@ string_of_int i ^ ": " ^ String.concat ", " [
+    row.id;
+    row.col1;
+    row.col2;
+    row.col3;
+    row.col4;
+    row.col5;
+    row.col6;
   ]
 
-let pp_rows = List.iter pp
+
+let pp_rows = List.iteri pp
+
 
 let convert row = {
-  id    = row.(0);
-  name  = row.(1);
-  age   = int_of_cell row.(2);
-  alive = some_bool_of_cell row.(3);
-  first_initial = char_of_cell row.(4);
+  id = row.(0);
+  col1 = row.(1);
+  col2 = row.(2);
+  col3 = row.(3);
+  col4 = row.(4);
+  col5 = row.(5);
+  col6 = row.(6);
 }
 
-let convert_rows = List.map convert
+
+let convert_rows xs =
+  let rec aux acc = function
+  | [] -> List.rev acc
+  | h :: t -> aux (convert h :: acc) t
+  in
+  aux [] xs
+
 
 let _ =
+  Gc.set { (Gc.get ()) with Gc.verbose = 1 };
   let db = connect config in
-  let cnt, rows = execute db "SELECT * FROM example;" in
+  let cnt, rows = execute db "SELECT * FROM test;" in
   print_endline @@ string_of_int cnt;
   rows |> convert_rows |> pp_rows;
   ()
