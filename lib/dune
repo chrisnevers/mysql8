@@ -1,7 +1,7 @@
 (library
- (name pancakes)
- (public_name pancakes)
- (c_names pancakes_stubs)
+ (name mysql8)
+ (public_name mysql8)
+ (c_names mysql8_stubs)
  (c_flags         (:include c_flags.mysqlclient))
  (c_library_flags (:include c_library_flags.mysqlclient))
  (inline_tests)

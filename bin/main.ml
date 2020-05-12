@@ -1,5 +1,5 @@
-open Pancakes
-open MySql
+
+open Mysql8
 
 type t = {
   id : string;
@@ -13,11 +13,12 @@ type t = {
 
 
 let config = {
-  host="localhost";
-  user="root";
-  password="";
-  database="test";
-  port=3006;
+  host    = Some "localhost";
+  user    = Some "root";
+  pwd     = None;
+  name    = Some "iready";
+  port    = Some 3006;
+  socket  = None
 }
 
 
@@ -36,29 +37,26 @@ let pp i (row : t) =
 let pp_rows = List.iteri pp
 
 
+let some = function
+  | Some s -> s
+  | None -> ""
+
+
 let convert row = {
-  id = row.(0);
-  col1 = row.(1);
-  col2 = row.(2);
-  col3 = row.(3);
-  col4 = row.(4);
-  col5 = row.(5);
-  col6 = row.(6);
+  id    = some row.(0);
+  col1  = some row.(1);
+  col2  = some row.(2);
+  col3  = some row.(3);
+  col4  = some row.(4);
+  col5  = some row.(5);
+  col6  = some row.(6);
 }
 
 
-let convert_rows xs =
-  let rec aux acc = function
-  | [] -> List.rev acc
-  | h :: t -> aux (convert h :: acc) t
-  in
-  aux [] xs
-
-
 let _ =
-  Gc.set { (Gc.get ()) with Gc.verbose = 1 };
   let db = connect config in
-  let cnt, rows = execute db "SELECT * FROM test;" in
-  print_endline @@ string_of_int cnt;
-  rows |> convert_rows |> pp_rows;
-  ()
+  let result = exec db "SELECT * FROM irp_sba_reporting_category_x_state;" in
+  let count = size result in
+  print_endline @@ ml642int count;
+  let results = map result ~f:convert in
+  pp_rows results
