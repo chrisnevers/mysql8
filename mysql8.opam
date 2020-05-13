@@ -12,7 +12,7 @@ build: [
 ]
 
 depends: [
-"dune" {build}
+"dune" {>= "1.11.0"}
 "dune-configurator" {build}
 "ppx_inline_test" {with-test}
 ]
