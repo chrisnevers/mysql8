@@ -667,7 +667,8 @@ type dbty =
   | UnknownTy (* 10 *)
   | Int64Ty (* 11 *)
   | BlobTy (* 12 *)
-  | DecimalTy
+  | DecimalTy (* 13 *)
+  | BitTy (* 14 *)
 
 (* 13 *)
 
@@ -700,6 +701,8 @@ let pretty_type = function
       "blob"
   | DecimalTy ->
       "decimal"
+  | BitTy ->
+      "bit"
 
 
 (* database login informations -- use None for default values *)
@@ -882,6 +885,8 @@ let str2ml str = str
 let enum2ml str = str
 
 let blob2ml str = str
+
+external bit2ml : string -> bool = "caml_bit2ml"
 
 (* [set2ml str] parses a comma separated list of words in [str] and
    returns them in a list.  MySQL uses this format for sets of values

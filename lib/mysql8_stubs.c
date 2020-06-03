@@ -4,6 +4,7 @@
 
 #include <stdio.h> /* sprintf */
 #include <string.h>
+#include <stdint.h>
 #include <stdarg.h>
 
 /* OCaml runtime system */
@@ -772,6 +773,7 @@ db_proto_info(value dbd)
 #define INT64_TY 11
 #define BLOB_TY 12
 #define DECIMAL_TY 13
+#define BIT_TY 14
 
 static value
 type2dbty(int type)
@@ -804,6 +806,7 @@ type2dbty(int type)
       {FIELD_TYPE_BLOB, Val_long(BLOB_TY)},
       {FIELD_TYPE_VAR_STRING, Val_long(STRING_TY)},
       {FIELD_TYPE_STRING, Val_long(STRING_TY)},
+      {FIELD_TYPE_BIT, Val_long(BIT_TY)},
       {-1 /*default*/, Val_long(UNKNOWN_TY)}};
   int i;
 
@@ -815,6 +818,14 @@ type2dbty(int type)
     /* empty */;
 
   return map[i].caml;
+}
+
+
+value caml_bit2ml(value v) {
+  CAMLparam0();
+  char* str = String_val(v);
+  int64_t j = (int64_t) str[0];
+  return Val_bool(j != 0);
 }
 
 value make_field(MYSQL_FIELD *f)

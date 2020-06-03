@@ -445,6 +445,7 @@ type dbty =
   | Int64Ty
   | BlobTy
   | DecimalTy
+  | BitTy
 
 type field =
   { name : string  (** Name of the field *)
@@ -507,6 +508,8 @@ val real_escape : dbd -> string -> string
 
 val int2ml : string -> int
 (** Use for all MySQL signed integer types but BIGINT *)
+
+val bit2ml : string -> bool
 
 val decimal2ml : string -> string
 
