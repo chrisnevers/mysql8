@@ -886,7 +886,10 @@ let enum2ml str = str
 
 let blob2ml str = str
 
-external bit2ml : string -> bool = "caml_bit2ml"
+external bit2ml_c : string -> int = "caml_bit2ml"
+
+let bit2ml str =
+    str |> bit2ml_c |> Int64.of_int
 
 (* [set2ml str] parses a comma separated list of words in [str] and
    returns them in a list.  MySQL uses this format for sets of values

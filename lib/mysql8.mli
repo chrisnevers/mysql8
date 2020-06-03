@@ -509,7 +509,7 @@ val real_escape : dbd -> string -> string
 val int2ml : string -> int
 (** Use for all MySQL signed integer types but BIGINT *)
 
-val bit2ml : string -> bool
+val bit2ml : string -> Int64.t
 
 val decimal2ml : string -> string
 

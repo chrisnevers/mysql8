@@ -824,8 +824,7 @@ type2dbty(int type)
 value caml_bit2ml(value v) {
   CAMLparam0();
   char* str = String_val(v);
-  int64_t j = (int64_t) str[0];
-  return Val_bool(j != 0);
+  return Val_int((int64_t) str[0]);
 }
 
 value make_field(MYSQL_FIELD *f)
