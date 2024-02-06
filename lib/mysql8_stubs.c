@@ -839,19 +839,20 @@ value make_field(MYSQL_FIELD *f)
   else
     table = Val_none;
 
+/*
   if (f->def)
     def = val_str_option(f->def, strlen(f->def));
   else
     def = Val_none;
-
-  data = caml_alloc_small(7, 0);
+*/
+  data = caml_alloc_small(6, 0);
   Field(data, 0) = name;
   Field(data, 1) = table;
-  Field(data, 2) = def;
-  Field(data, 3) = type2dbty(f->type);
-  Field(data, 4) = Val_long(f->max_length);
-  Field(data, 5) = Val_long(f->flags);
-  Field(data, 6) = Val_long(f->decimals);
+//  Field(data, 2) = def;
+  Field(data, 2) = type2dbty(f->type);
+  Field(data, 3) = Val_long(f->max_length);
+  Field(data, 4) = Val_long(f->flags);
+  Field(data, 5) = Val_long(f->decimals);
 
   CAMLreturn(data);
 }

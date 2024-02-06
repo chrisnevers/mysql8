@@ -721,8 +721,8 @@ type field =
   ; (* Name of the field *)
     table : string option
   ; (* Table name, or None if a constructed field *)
-    def : string option
-  ; (* Default value of the field *)
+(*  def : string option
+  ; *)(* Default value of the field *)
     ty : dbty
   ; max_length : int
   ; (* Maximum width of field for the result set *)
