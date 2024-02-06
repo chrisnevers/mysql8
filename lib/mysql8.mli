@@ -450,7 +450,7 @@ type dbty =
 type field =
   { name : string  (** Name of the field *)
   ; table : string option  (** Table name, or None if a constructed field *)
-  ; def : string option  (** Default value of the field *)
+  (* ; def : string option ( * * Default value of the field *)
   ; ty : dbty  (** The type of data stored in the field *)
   ; max_length : int  (** Maximum width of field for the result set *)
   ; flags : int  (** Flags set *)
