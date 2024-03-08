@@ -4,6 +4,8 @@ An OCaml wrapper for the MySQL C API (v8.0). This project is a fork of
 [ocaml-mysql](https://github.com/ygrek/ocaml-mysql) with updates to handle
 MySQL 8.
 
+You probably need the *fix-build* branch.
+
 # Install
 You can install the library with:
 
